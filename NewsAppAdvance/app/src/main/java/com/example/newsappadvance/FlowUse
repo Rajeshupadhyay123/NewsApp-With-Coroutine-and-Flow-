@@ -1,0 +1,91 @@
+
+
+
+
+
+//alternate of flow builder block
+        val data= flowOf(1,2,3,4).flowOn(Dispatchers.IO)
+
+
+        //if we want to convert list to flow
+        val data1= listOf<Int>(4,5,6,7).asFlow().flowOn(Dispatchers.IO)
+
+        //if we want to update data or map something in flow then
+        val data2= flowOf(1,2,3,4).flowOn(Dispatchers.IO)
+
+        //if we want to fetch data on based on some condition, we will use filter
+        val data3= flowOf(2,5,8,9,10).flowOn(Dispatchers.IO)
+
+        runBlocking {
+            getData()
+                    .catch {
+                        Log.i("main", "Exception: ${it.message}")
+                    }
+                    .collect {
+                Log.i("main", "onCreate: $it")
+            }
+
+            data.collect {
+                Log.i("data", "data is $it")
+            }
+
+            data1.collect {
+                Log.i("data1", "data1 is $it")
+            }
+
+            /*
+                map is generaly used when we want to perform some updation on the given data
+                it fetch the data one by one and then perform operation on that data and then
+                the collector collect that updated data one by one
+             */
+            data2.map {
+                it*it
+            }.collect {
+                Log.i("data2", "mapped data is $it")
+            }
+
+            /*
+                filter is used for fetching the data based on some condition...
+                it first check the condition and then the data which full field that condition
+                will passes to the collector one by one
+             */
+            data3.filter {
+                it%2==0   // this is the condition for checking the even number present in the flow
+            }.collect {
+                Log.i("data3", "the filter data is $it")
+            }
+
+        }
+    }
+
+    fun getData():Flow<Int>{
+        return flow {
+            for(i in 1..4){
+                delay(1000)
+                emit(i)
+            }
+        }.flowOn(Dispatchers.IO)
+
+
+        /**Flow builders:-------------------
+         * There are the following basic ways to create a flow:=
+         * ==================================================================
+         * flowOf(…) functions to create a flow from a fixed set of values.
+         * asFlow() extension functions on various types to convert them into flows.
+         * flow { … } builder function to construct arbitrary flows from sequential calls to emit function.
+         * channelFlow { … } builder function to construct arbitrary flows from potentially concurrent calls to the send function.
+         * MutableStateFlow and MutableSharedFlow define the corresponding constructor functions to create a hot flow that can be directly updated.
+         **/
+
+
+        /**
+         * For understanding better why use flow---
+         * https://www.raywenderlich.com/9799571-kotlin-flow-for-android-getting-started#toc-anchor-007
+         *
+         * For Kotlin Flow official docs---
+         * https://kotlinlang.org/docs/flow.html
+         **/
+
+         /**Best resource for kotlin coroutine
+         https://medium.com/androiddevelopers/coroutines-first-things-first-e6187bf3bb21
+         **/
